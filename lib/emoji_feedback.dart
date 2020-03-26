@@ -26,7 +26,7 @@ final List<EmojiModel> reactions = <EmojiModel>[
       src: 'assets/smile.png',
       activeSrc: 'assets/smile_big.png'),
   EmojiModel(
-      label: 'Awesome',
+      label: 'Great',
       src: 'assets/surprised.png',
       activeSrc: 'assets/surprised_big.png'),
 ].toList();
@@ -216,7 +216,7 @@ class _EmojiButton extends StatelessWidget {
     final color =
         ColorTween(begin: Colors.black, end: Colors.grey).transform(scale);
     return Container(
-      width: activeEmojiSize + 10,
+      width: activeEmojiSize,
       padding: EdgeInsets.only(top: halfDiffSize),
       child: Column(
         children: <Widget>[
