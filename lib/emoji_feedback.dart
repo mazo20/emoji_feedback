@@ -216,7 +216,7 @@ class _EmojiButton extends StatelessWidget {
     final color =
         ColorTween(begin: Colors.black, end: Colors.grey).transform(scale);
     return Container(
-      width: activeEmojiSize,
+      width: activeEmojiSize + 10,
       padding: EdgeInsets.only(top: halfDiffSize),
       child: Column(
         children: <Widget>[
