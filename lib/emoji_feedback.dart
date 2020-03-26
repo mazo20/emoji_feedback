@@ -31,22 +31,18 @@ final List<EmojiModel> reactions = <EmojiModel>[
       activeSrc: 'assets/surprised_big.png'),
 ].toList();
 
-const EmojiSize = 40.0;
-const EmojiRadius = EmojiSize / 2.0;
-const ActiveEmojiSize = EmojiSize * 1.5;
-const ActiveEmojiRadius = ActiveEmojiSize / 2.0;
-const HalfDiffSize = (ActiveEmojiSize - EmojiSize) / 2.0;
-
 class EmojiFeedback extends StatefulWidget {
   final int currentIndex;
   final Function onChange;
   final num availableWidth;
+  final double emojiSize;
 
   const EmojiFeedback({
     Key key,
     this.currentIndex = 2,
     this.onChange,
     this.availableWidth = 320.0,
+    this.emojiSize = 35.0,
   }) : super(key: key);
 
   @override
@@ -61,6 +57,11 @@ class EmojiFeedbackState extends State<EmojiFeedback>
   Animation<double> animation;
   double pos = 2.0; // should be between [0, 4]
 
+  double emojiRadius;
+  double activeEmojiSize;
+  double activeEmojiRadius;
+  double halfDiffSize;
+
   @override
   void initState() {
     super.initState();
@@ -68,6 +69,11 @@ class EmojiFeedbackState extends State<EmojiFeedback>
       duration: Duration(milliseconds: 250),
       vsync: this,
     );
+
+    emojiRadius = widget.emojiSize / 2.0;
+    activeEmojiSize = widget.emojiSize * 1.5;
+    activeEmojiRadius = activeEmojiSize / 2.0;
+    halfDiffSize = (activeEmojiSize - widget.emojiSize) / 2.0;
   }
 
   void moveTo(int index) {
@@ -89,19 +95,24 @@ class EmojiFeedbackState extends State<EmojiFeedback>
   @override
   Widget build(BuildContext context) {
     final posTween =
-        Tween<double>(begin: 0, end: widget.availableWidth - ActiveEmojiSize);
+        Tween<double>(begin: 0, end: widget.availableWidth - activeEmojiSize);
     List<_EmojiButton> emojiButtons = [];
     List<Widget> activeEmojis = [];
     for (var i = 0; i < reactions.length; i++) {
       final distanceTo = posTween.transform((i - pos).abs() / 4);
       var scale = 1.0;
-      if (distanceTo < ActiveEmojiRadius) {
+      if (distanceTo < activeEmojiRadius) {
         scale = 0.0;
       } else {
         scale =
-            min<double>((distanceTo - ActiveEmojiRadius) / EmojiRadius, 1.0);
+            min<double>((distanceTo - activeEmojiRadius) / emojiRadius, 1.0);
       }
       emojiButtons.add(_EmojiButton(
+        emojiSize: widget.emojiSize,
+        emojiRadius: emojiRadius,
+        activeEmojiSize: activeEmojiSize,
+        activeEmojiRadius: activeEmojiRadius,
+        halfDiffSize: halfDiffSize,
         scale: scale,
         label: reactions[i].label,
         src: reactions[i].src,
@@ -121,7 +132,7 @@ class EmojiFeedbackState extends State<EmojiFeedback>
                     package: 'emoji_feedback',
                   ),
                 ),
-                borderRadius: BorderRadius.circular(ActiveEmojiSize),
+                borderRadius: BorderRadius.circular(activeEmojiSize),
               ),
             ),
           ),
@@ -133,9 +144,9 @@ class EmojiFeedbackState extends State<EmojiFeedback>
       child: Stack(
         children: <Widget>[
           Positioned(
-            top: ActiveEmojiRadius,
-            left: ActiveEmojiRadius,
-            right: ActiveEmojiRadius,
+            top: activeEmojiRadius,
+            left: activeEmojiRadius,
+            right: activeEmojiRadius,
             child: Container(
               height: 1.0,
               color: Colors.grey,
@@ -151,8 +162,8 @@ class EmojiFeedbackState extends State<EmojiFeedback>
           Positioned(
             left: posTween.transform(pos / 4),
             child: Container(
-              width: ActiveEmojiSize,
-              height: ActiveEmojiSize,
+              width: activeEmojiSize,
+              height: activeEmojiSize,
               child: Stack(
                 children: activeEmojis,
               ),
@@ -175,14 +186,27 @@ class _EmojiButton extends StatelessWidget {
   final num scale;
   final String label;
   final String src;
+  final double emojiSize;
+
+  final double emojiRadius;
+  final double activeEmojiSize;
+  final double activeEmojiRadius;
+  final double halfDiffSize;
 
   const _EmojiButton({
     Key key,
     @required this.onPressed,
     this.scale,
+    this.emojiSize,
+    this.emojiRadius,
+    this.activeEmojiSize,
+    this.activeEmojiRadius,
+    this.halfDiffSize,
     @required this.label,
     @required this.src,
   }) : super(key: key);
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +216,8 @@ class _EmojiButton extends StatelessWidget {
     final color =
         ColorTween(begin: Colors.black, end: Colors.grey).transform(scale);
     return Container(
-      width: ActiveEmojiSize,
-      padding: EdgeInsets.only(top: HalfDiffSize),
+      width: activeEmojiSize,
+      padding: EdgeInsets.only(top: halfDiffSize),
       child: Column(
         children: <Widget>[
           Transform.scale(
@@ -202,13 +226,13 @@ class _EmojiButton extends StatelessWidget {
               splashColor: Colors.transparent,
               onTap: onPressed,
               child: Container(
-                width: EmojiSize,
-                height: EmojiSize,
+                width: emojiSize,
+                height: emojiSize,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(src, package: 'emoji_feedback'),
                   ),
-                  borderRadius: BorderRadius.circular(EmojiSize),
+                  borderRadius: BorderRadius.circular(emojiSize),
                 ),
               ),
             ),
