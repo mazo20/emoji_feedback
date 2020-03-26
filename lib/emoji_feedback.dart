@@ -241,7 +241,7 @@ class _EmojiButton extends StatelessWidget {
             padding: EdgeInsets.only(top: offsetTop),
             child: Text(
               label,
-              style: Theme.of(context).textTheme.caption.copyWith(color: color),
+              style: Theme.of(context).textTheme.caption.copyWith(color: color).apply(fontSizeFactor: 0.8),
             ),
           ),
         ],
